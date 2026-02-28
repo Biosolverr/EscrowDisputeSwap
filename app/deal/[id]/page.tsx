@@ -1,27 +1,21 @@
-import { MOCK_DEALS } from "@/lib/escrow-store"
+"use client"
+
 import { EscrowHeader } from "@/components/escrow-header"
 import { DealDetails } from "@/components/deal-details"
+import { use } from "react"
 
-export default async function DealPage({
+export default function DealPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
-  const deal = MOCK_DEALS.find((d) => d.id === id)
+  const { id } = use(params)
 
   return (
     <div className="min-h-screen bg-background">
       <EscrowHeader />
-
       <main className="mx-auto max-w-3xl px-6 py-10">
-        {deal ? (
-          <DealDetails deal={deal} />
-        ) : (
-          <div className="py-20 text-center">
-            <p className="text-lg text-muted-foreground">Deal not found</p>
-          </div>
-        )}
+        <DealDetails dealId={parseInt(id, 10)} />
       </main>
     </div>
   )
