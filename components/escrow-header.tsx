@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Shield, Wallet, LogOut, AlertCircle } from "lucide-react"
 import { useWeb3 } from "@/lib/web3-provider"
+import { BaseSignInButton } from "@/components/BaseSignInButton"
 
 function shortenAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -27,6 +28,10 @@ export function EscrowHeader() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <BaseSignInButton />
+
+          <div className="h-5 w-px bg-border" />
+
           {account && !isBase && (
             <Button
               onClick={switchToBase}
