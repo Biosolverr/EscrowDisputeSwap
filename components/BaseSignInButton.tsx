@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { signInWithBase } from "@/lib/baseAccount"
-import { Loader2 } from "lucide-react"
+import { signInWithBase, getSavedBaseAddress, clearBaseAddress } from "@/lib/baseAccount"
+import { Loader2, X } from "lucide-react"
 
 function shortenAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -14,7 +14,14 @@ export function BaseSignInButton() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Hydrate from sessionStorage on mount so we don't re-prompt
+  useEffect(() => {
+    const saved = getSavedBaseAddress()
+    if (saved) setAddress(saved)
+  }, [])
+
   const handleSignIn = useCallback(async () => {
+    if (address) return // already signed in
     setLoading(true)
     setError(null)
     try {
@@ -26,6 +33,12 @@ export function BaseSignInButton() {
     } finally {
       setLoading(false)
     }
+  }, [address])
+
+  const handleDisconnect = useCallback(() => {
+    clearBaseAddress()
+    setAddress(null)
+    setError(null)
   }, [])
 
   if (error) {
@@ -46,6 +59,14 @@ export function BaseSignInButton() {
       <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1 font-mono text-xs text-secondary-foreground">
         <span className="inline-block h-2 w-2 rounded-full bg-primary" />
         Base: {shortenAddress(address)}
+        <button
+          onClick={handleDisconnect}
+          className="ml-1 rounded p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="Disconnect Base account"
+          type="button"
+        >
+          <X className="h-3 w-3" />
+        </button>
       </span>
     )
   }
